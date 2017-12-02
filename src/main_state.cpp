@@ -27,7 +27,13 @@ namespace ld40 {
 			++this->position.x;
 		}
 		if (controls & static_cast<std::uint8_t>(Controls::Select)) {
-			this->board.at(this->position.x).at(this->position.y).set_colour(Palette::Orange);
+			if (this->selected.has_value() && this->position == this->selected.value()) {
+				this->selected = {};
+			}
+			else {
+				this->selected = this->position;
+				//this->board.at(this->position.x).at(this->position.y).set_colour(Palette::Orange);
+			}
 		}
 		return;
 	}
@@ -40,6 +46,9 @@ namespace ld40 {
 				this->zone.setOutlineColor(sf::Color::Transparent);
 				if (this->position.x == i && this->position.y == j) {
 					this->zone.setOutlineColor(Palette::White);
+				}
+				if (this->selected.has_value() && this->selected.value().x == i && this->selected.value().y == j) {
+					this->zone.setOutlineColor(Palette::Red);
 				}
 				this->window.draw(this->zone);
 			}
