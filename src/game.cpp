@@ -6,7 +6,7 @@
 #include "inc/palette.hpp"
 
 namespace ld40 {
-	Game::Game() : window(sf::VideoMode(1000.0f, 1000.0f), "LD40", sf::Style::Titlebar | sf::Style::Close) {}
+	Game::Game() : window(sf::VideoMode(1000.0f, 1000.0f), "LD40", sf::Style::Titlebar | sf::Style::Close), state(new MainState(this->window)) {}
 
 	void Game::run() {
 		bool running{true};
@@ -29,6 +29,7 @@ namespace ld40 {
 				accumulator -= dt;
 			}
 			window.clear(palette::SlimeGreen);
+			this->state->render();
 			window.display();
 		}
 
