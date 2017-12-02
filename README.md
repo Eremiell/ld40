@@ -2,6 +2,8 @@
 
 Endangered animal species shelter game.
 
+Made by Eremiell (Code), oboforty (Music & SFX), and Hive Mind (Visuals).
+
 ## Game
 
 * You're an endangered species shelter manager.
@@ -14,3 +16,9 @@ Endangered animal species shelter game.
 * Each turn you can move a limited number of species (one?) (x)or renovate limited number of habitats to something else (one?).
 * Once you survive enough turns/host enough species, new rows or columns may unlock.
 * Game uses [Arne16](http://androidarts.com/palette/16pal.htm) palette.
+
+## Links
+
+* Follow the development on [Trello](https://trello.com/b/qFf9vUcw/ld40).
+* Watch the development stream on [Picarto](https://picarto.tv/Eremiell).
+* Come chat with us to [Discord](https://discord.gg/NX2jkPw).
