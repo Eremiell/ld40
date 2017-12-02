@@ -5,7 +5,7 @@
 #include <SFML/Graphics/Color.hpp>
 
 namespace ld40 {
-	namespace palette {
+	namespace Palette {
 		const sf::Color Void(0, 0, 0);
 		const sf::Color Gray(157, 157, 157);
 		const sf::Color White(255, 255, 255);

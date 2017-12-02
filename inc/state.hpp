@@ -9,7 +9,7 @@ namespace ld40 {
 		public:
 			State(sf::RenderWindow &window);
 			virtual ~State();
-			virtual void integrate() = 0;
+			virtual void integrate(std::uint8_t controls) = 0;
 			virtual void render() = 0;
 		protected:
 			sf::RenderWindow &window;
