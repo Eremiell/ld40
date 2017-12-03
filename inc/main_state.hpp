@@ -21,8 +21,8 @@ namespace ld40 {
 		private:
 			sf::Vector2<std::uint8_t> size;
 			sf::RectangleShape zone;
-			sf::Vector2<std::uint8_t> position;
-			std::optional<sf::Vector2<std::uint8_t>> selected;
+			sf::Vector2<std::int8_t> position;
+			std::optional<sf::Vector2<std::int8_t>> selected;
 			std::vector<std::vector<Tile>> board;
 			sf::Sprite sprite;
 			SpeciesCatalogue catalogue;
