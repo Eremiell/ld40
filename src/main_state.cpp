@@ -1,6 +1,8 @@
 #include "inc/main_state.hpp"
 #include <cstdint>
 #include <cmath>
+#include <random>
+#include <chrono>
 #include "inc/controls.hpp"
 #include "inc/palette.hpp"
 
@@ -15,6 +17,7 @@ namespace ld40 {
 		this->zone.setOrigin(64.0f, 64.0f);
 		this->zone.setOutlineThickness(5.0f);
 		this->board.at(2).at(2).set_species(*this->catalogue.get_species());
+		this->generate_gates();
 	}
 
 	void MainState::integrate(std::uint8_t controls) {
@@ -48,13 +51,16 @@ namespace ld40 {
 			}
 			if (this->turn % 5 == 2 && !this->incoming.has_value()) {
 				this->incoming = *this->catalogue.get_species();
+				std::mt19937_64 mt(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+				std::uniform_int_distribution<std::size_t> dist(0, this->gates.size() - 1);
+				this->to_gate = dist(mt);
 			}
 			if (!(this->turn % 5) && this->incoming.has_value()) {
-				if (this->board.at(2).at(4).get_species().has_value()) {
+				if (this->board.at(this->gates.at(this->to_gate).x).at(this->gates.at(this->to_gate).y).get_species().has_value()) {
 					over = true;
 				}
 				else {
-					this->board.at(2).at(4).set_species(this->incoming.value());
+					this->board.at(this->gates.at(this->to_gate).x).at(this->gates.at(this->to_gate).y).set_species(this->incoming.value());
 					this->incoming = {};
 				}
 			}
@@ -92,8 +98,44 @@ namespace ld40 {
 			this->sprite.setTextureRect(texture.second);
 			this->sprite.setOrigin(8.0f, 8.0f);
 			this->sprite.setScale(2.0f, 2.0f);
-			this->sprite.setPosition(500.0f, 845.0f);
+			if (!this->gates.at(this->to_gate).x) {
+				this->sprite.setPosition(500.0f + -3 * 138.0f, 500.0f + (this->gates.at(this->to_gate).y - 2) * 138.0f);
+			}
+			else if (!this->gates.at(this->to_gate).y) {
+				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - 2) * 138.0f, 500.0f + -3 * 138.0f);
+			}
+			else if (this->gates.at(this->to_gate).x == static_cast<std::size_t>(this->size.x - 1)) {
+				this->sprite.setPosition(500.0f + 3 * 138.0f, 500.0f + (this->gates.at(this->to_gate).y - 2) * 138.0f);
+			}
+			else {
+				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - 2) * 138.0f, 500.0f + 3 * 138.0f);
+			}
 			this->window.draw(this->sprite);
+		}
+		return;
+	}
+
+	void MainState::generate_gates() {
+		this->gates.clear();
+		for (std::uint8_t i = 1; i < this->size.x - 1; ++i) {
+			if ((i - 1) % 3 == 1) {
+				this->gates.emplace_back(i, 0);
+			}
+		}
+		for (std::uint8_t i = 1; i < this->size.y - 1; ++i) {
+			if ((i - 1) % 3 == 1) {
+				this->gates.emplace_back(this->size.x - 1, i);
+			}
+		}
+		for (std::size_t i = this->size.x - 2; i; --i) {
+			if ((this->size.x - i - 2) % 3 == 1) {
+				this->gates.emplace_back(i, this->size.y - 1);
+			}
+		}
+		for (std::size_t i = this->size.y - 2; i; --i) {
+			if ((this->size.y - i - 2) % 3 == 1) {
+				this->gates.emplace_back(0, i);
+			}
 		}
 		return;
 	}

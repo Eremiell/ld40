@@ -26,9 +26,12 @@ namespace ld40 {
 			bool over;
 			std::optional<sf::Vector2<std::int8_t>> selected;
 			std::optional<Species> incoming;
+			std::size_t to_gate;
 			std::vector<std::vector<Tile>> board;
+			std::vector<sf::Vector2<std::size_t>> gates;
 			sf::Sprite sprite;
 			SpeciesCatalogue catalogue;
+			void generate_gates();
 	};
 }
 
