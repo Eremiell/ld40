@@ -10,6 +10,7 @@ namespace ld40 {
 	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), position(2u, 2u), turn(0ull), over(false) {
 		this->tm.load_sheet(u8"sprite_sheet.json");
 		this->tm.load_sheet(u8"animal_icons.json");
+		this->tm.load_sheet(u8"game_tiles.json");
 		this->board.resize(5);
 		for (std::size_t i = 0; i < 5; ++i) {
 			this->board.at(i).resize(5);
@@ -87,16 +88,95 @@ namespace ld40 {
 					this->sprite.setTextureRect(texture.second);
 					this->sprite.setScale(1.0f, 1.0f);
 					this->sprite.setOrigin(64.0f, 64.0f);
+					this->sprite.setRotation(0.0f);
 					this->sprite.setPosition(500.0f + (i - 2) * 138.0f, 500.0f + (j - 2) * 138.0f);
 					this->window.draw(this->sprite);
 				}
 			}
 		}
+		for (std::int8_t i = 0; i < this->size.x; ++i) {
+			auto texture = this->tm.get_texture(u8"wall_EW");
+			for (auto &gate : this->gates) {
+				if (static_cast<int>(gate.x) == i && !gate.y) {
+					texture = this->tm.get_texture(u8"gate_EW");
+				}
+			}
+			this->sprite.setTexture(*texture.first);
+			this->sprite.setTextureRect(texture.second);
+			this->sprite.setScale(1.0f, 1.0f);
+			this->sprite.setOrigin(64.0f, 64.0f);
+			this->sprite.setRotation(0.0f);
+			this->sprite.setPosition(500.0f + (i - 2) * 138.0f, 500.0f + -3 * 138.0f);
+			this->window.draw(this->sprite);
+		}
+		for (std::int8_t i = 0; i < this->size.x; ++i) {
+			auto texture = this->tm.get_texture(u8"wall_EW");
+			for (auto &gate : this->gates) {
+				if (static_cast<int>(gate.x) == i && gate.y == this->size.y - 1u) {
+					texture = this->tm.get_texture(u8"gate_EW");
+				}
+			}
+			this->sprite.setTexture(*texture.first);
+			this->sprite.setTextureRect(texture.second);
+			this->sprite.setScale(1.0f, 1.0f);
+			this->sprite.setOrigin(64.0f, 64.0f);
+			this->sprite.setRotation(180.0f);
+			this->sprite.setPosition(500.0f + (i - 2) * 138.0f, 500.0f + 3 * 138.0f);
+			this->window.draw(this->sprite);
+		}
+		for (std::int8_t i = 0; i < this->size.y; ++i) {
+			auto texture = this->tm.get_texture(u8"wall_NS");
+			for (auto &gate : this->gates) {
+				if (static_cast<int>(gate.y) == i && !gate.x) {
+					texture = this->tm.get_texture(u8"gate_NS");
+				}
+			}
+			this->sprite.setTexture(*texture.first);
+			this->sprite.setTextureRect(texture.second);
+			this->sprite.setScale(1.0f, 1.0f);
+			this->sprite.setOrigin(64.0f, 64.0f);
+			this->sprite.setRotation(180.0f);
+			this->sprite.setPosition(500.0f + -3 * 138.0f, 500.0f + (i - 2) * 138.0f);
+			this->window.draw(this->sprite);
+		}
+		for (std::int8_t i = 0; i < this->size.y; ++i) {
+			auto texture = this->tm.get_texture(u8"wall_NS");
+			for (auto &gate : this->gates) {
+				if (static_cast<int>(gate.y) == i && gate.x == this->size.x - 1u) {
+					texture = this->tm.get_texture(u8"gate_NS");
+				}
+			}
+			this->sprite.setTexture(*texture.first);
+			this->sprite.setTextureRect(texture.second);
+			this->sprite.setScale(1.0f, 1.0f);
+			this->sprite.setOrigin(64.0f, 64.0f);
+			this->sprite.setRotation(0.0f);
+			this->sprite.setPosition(500.0f + 3 * 138.0f, 500.0f + (i - 2) * 138.0f);
+			this->window.draw(this->sprite);
+		}
+		auto texture = this->tm.get_texture(u8"corner_NE");
+		this->sprite.setTexture(*texture.first);
+		this->sprite.setTextureRect(texture.second);
+		this->sprite.setScale(1.0f, 1.0f);
+		this->sprite.setOrigin(64.0f, 64.0f);
+		this->sprite.setRotation(0.0f);
+		this->sprite.setPosition(500.0f + 3 * 138.0f, 500.0f - 3 * 138.0f);
+		this->window.draw(this->sprite);
+		this->sprite.setRotation(90.0f);
+		this->sprite.setPosition(500.0f + 3 * 138.0f, 500.0f + 3 * 138.0f);
+		this->window.draw(this->sprite);
+		this->sprite.setRotation(180.0f);
+		this->sprite.setPosition(500.0f - 3 * 138.0f, 500.0f + 3 * 138.0f);
+		this->window.draw(this->sprite);
+		this->sprite.setRotation(270.0f);
+		this->sprite.setPosition(500.0f - 3 * 138.0f, 500.0f - 3 * 138.0f);
+		this->window.draw(this->sprite);
 		if (this->incoming.has_value()) {
 			auto texture = this->tm.get_texture(this->incoming.value().get_name() + u8"_icon");
 			this->sprite.setTexture(*texture.first);
 			this->sprite.setTextureRect(texture.second);
 			this->sprite.setOrigin(8.0f, 8.0f);
+			this->sprite.setRotation(0.0f);
 			this->sprite.setScale(2.0f, 2.0f);
 			if (!this->gates.at(this->to_gate).x) {
 				this->sprite.setPosition(500.0f + -3 * 138.0f, 500.0f + (this->gates.at(this->to_gate).y - 2) * 138.0f);
