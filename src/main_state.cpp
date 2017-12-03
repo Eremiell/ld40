@@ -5,7 +5,7 @@
 #include "inc/palette.hpp"
 
 namespace ld40 {
-	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), position(2u, 2u) {
+	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), position(2u, 2u), turn(0ull), over(false) {
 		this->tm.load_sheet(u8"sprite_sheet.json");
 		this->tm.load_sheet(u8"animal_icons.json");
 		this->board.resize(5);
@@ -18,30 +18,45 @@ namespace ld40 {
 	}
 
 	void MainState::integrate(std::uint8_t controls) {
-		if (controls & static_cast<std::uint8_t>(Controls::Up) && this->position.y) {
-			--this->position.y;
-		}
-		if (controls & static_cast<std::uint8_t>(Controls::Left) && this->position.x) {
-			--this->position.x;
-		}
-		if (controls & static_cast<std::uint8_t>(Controls::Down) && this->position.y < this->size.y - 1) {
-			++this->position.y;
-		}
-		if (controls & static_cast<std::uint8_t>(Controls::Right) && this->position.x < this->size.x - 1) {
-			++this->position.x;
-		}
-		if (controls & static_cast<std::uint8_t>(Controls::Select)) {
-			if (this->selected.has_value() && this->position == this->selected.value()) {
-				this->selected = {};
+		if (!over) {
+			if (controls & static_cast<std::uint8_t>(Controls::Up) && this->position.y) {
+				--this->position.y;
 			}
-			else if (this->selected.has_value() && std::abs(this->position.x - this->selected.value().x) + std::abs(this->position.y - this->selected.value().y) == 1 && !this->board.at(this->position.x).at(this->position.y).get_species().has_value()) {
-				this->board.at(this->position.x).at(this->position.y).set_species(this->board.at(this->selected.value().x).at(this->selected.value().y).get_species());
-				this->board.at(this->selected.value().x).at(this->selected.value().y).set_species();
-				this->selected = {};
+			if (controls & static_cast<std::uint8_t>(Controls::Left) && this->position.x) {
+				--this->position.x;
 			}
-			else if (this->board.at(this->position.x).at(this->position.y).get_species().has_value()) {
-				this->selected = this->position;
-				//this->board.at(this->position.x).at(this->position.y).set_colour(Palette::Orange);
+			if (controls & static_cast<std::uint8_t>(Controls::Down) && this->position.y < this->size.y - 1) {
+				++this->position.y;
+			}
+			if (controls & static_cast<std::uint8_t>(Controls::Right) && this->position.x < this->size.x - 1) {
+				++this->position.x;
+			}
+			if (controls & static_cast<std::uint8_t>(Controls::Select)) {
+				if (this->selected.has_value() && this->position == this->selected.value()) {
+					this->selected = {};
+				}
+				else if (this->selected.has_value() && std::abs(this->position.x - this->selected.value().x) + std::abs(this->position.y - this->selected.value().y) == 1 && !this->board.at(this->position.x).at(this->position.y).get_species().has_value()) {
+					this->board.at(this->position.x).at(this->position.y).set_species(this->board.at(this->selected.value().x).at(this->selected.value().y).get_species());
+					this->board.at(this->selected.value().x).at(this->selected.value().y).set_species();
+					this->selected = {};
+					++this->turn;
+				}
+				else if (this->board.at(this->position.x).at(this->position.y).get_species().has_value()) {
+					this->selected = this->position;
+					//this->board.at(this->position.x).at(this->position.y).set_colour(Palette::Orange);
+				}
+			}
+			if (this->turn % 5 == 2 && !this->incoming.has_value()) {
+				this->incoming = *this->catalogue.get_species();
+			}
+			if (!(this->turn % 5) && this->incoming.has_value()) {
+				if (this->board.at(2).at(4).get_species().has_value()) {
+					over = true;
+				}
+				else {
+					this->board.at(2).at(4).set_species(this->incoming.value());
+					this->incoming = {};
+				}
 			}
 		}
 		return;
@@ -64,11 +79,21 @@ namespace ld40 {
 					auto texture = this->tm.get_texture(this->board.at(i).at(j).get_species().value().get_name());
 					this->sprite.setTexture(*texture.first);
 					this->sprite.setTextureRect(texture.second);
+					this->sprite.setScale(1.0f, 1.0f);
 					this->sprite.setOrigin(64.0f, 64.0f);
 					this->sprite.setPosition(500.0f + (i - 2) * 138.0f, 500.0f + (j - 2) * 138.0f);
 					this->window.draw(this->sprite);
 				}
 			}
+		}
+		if (this->incoming.has_value()) {
+			auto texture = this->tm.get_texture(this->incoming.value().get_name() + u8"_icon");
+			this->sprite.setTexture(*texture.first);
+			this->sprite.setTextureRect(texture.second);
+			this->sprite.setOrigin(8.0f, 8.0f);
+			this->sprite.setScale(2.0f, 2.0f);
+			this->sprite.setPosition(500.0f, 845.0f);
+			this->window.draw(this->sprite);
 		}
 		return;
 	}

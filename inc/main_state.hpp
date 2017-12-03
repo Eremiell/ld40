@@ -22,7 +22,10 @@ namespace ld40 {
 			sf::Vector2<std::uint8_t> size;
 			sf::RectangleShape zone;
 			sf::Vector2<std::int8_t> position;
+			std::uint64_t turn;
+			bool over;
 			std::optional<sf::Vector2<std::int8_t>> selected;
+			std::optional<Species> incoming;
 			std::vector<std::vector<Tile>> board;
 			sf::Sprite sprite;
 			SpeciesCatalogue catalogue;
