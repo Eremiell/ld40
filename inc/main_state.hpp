@@ -25,6 +25,7 @@ namespace ld40 {
 			sf::Vector2<std::int8_t> position;
 			std::uint64_t turn;
 			bool over;
+			bool resize;
 			std::optional<sf::Vector2<std::int8_t>> selected;
 			std::optional<Species> incoming;
 			std::size_t to_gate;

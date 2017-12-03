@@ -6,20 +6,22 @@
 #include "inc/controls.hpp"
 #include "inc/palette.hpp"
 
+#include <iostream>
+
 namespace ld40 {
-	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false) {
+	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(true) {
 		this->tm.load_sheet(u8"sprite_sheet.json");
 		this->tm.load_sheet(u8"animal_icons.json");
 		this->tm.load_sheet(u8"game_tiles.json");
-		this->board.resize(5);
-		for (std::size_t i = 0; i < 5; ++i) {
-			this->board.at(i).resize(5);
+		this->board.resize(this->size.x);
+		for (std::size_t i = 0; i < this->size.x; ++i) {
+			this->board.at(i).resize(this->size.y);
 		}
 		this->zone.setOrigin(64.0f, 64.0f);
 		this->selector.setFillColor(sf::Color::Transparent);
 		this->selector.setOrigin(59.0f, 59.0f);
 		this->selector.setOutlineThickness(5.0f);
-		this->board.at(2).at(2).set_species(*this->catalogue.get_species());
+		this->board.at((this->size.x - 1) / 2).at((this->size.y - 1) / 2).set_species(*this->catalogue.get_species());
 		this->generate_gates();
 	}
 
@@ -66,26 +68,58 @@ namespace ld40 {
 					this->board.at(this->gates.at(this->to_gate).x).at(this->gates.at(this->to_gate).y).set_species(this->incoming.value());
 					this->incoming = {};
 				}
+				this->resize = true;
+			}
+			if (this->turn && this->resize && !(this->turn % 20)) {
+				std::uint8_t direction = this->turn % 80 / 20;
+				switch (direction) {
+					case 0:
+						for (auto &row : this->board) {
+							row.emplace(row.begin());
+						}
+						++this->size.y;
+						break;
+					case 1:
+						{
+							auto &row = this->board.emplace_back();
+							row.resize(++this->size.x);
+						}
+						break;
+					case 2:
+						for (auto &row : this->board) {
+							row.emplace_back();
+						}
+						++this->size.y;
+						break;
+					case 3:
+						{
+							auto row = this->board.emplace(this->board.begin());
+							row->resize(++this->size.x);
+						}
+						break;
+				}
+				this->generate_gates();
+				this->resize = false;
 			}
 		}
 		return;
 	}
 
 	void MainState::render() {
-		for (std::int8_t i = 0; i < 5; ++i) {
-			for (std::int8_t j = 0; j < 5; ++j) {
-				this->zone.setPosition(500.0f + (i - 2) * 128.0f, 500.0f + (j - 2) * 128.0f);
+		for (std::int8_t i = 0; i < this->size.x; ++i) {
+			for (std::int8_t j = 0; j < this->size.y; ++j) {
+				this->zone.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (j - ((this->size.y - 1) / 2.0f)) * 128.0f);
 				this->zone.setFillColor(this->board.at(i).at(j).get_colour());
 				//this->zone.setOutlineColor(sf::Color::Transparent);
 				this->window.draw(this->zone);
 				if (this->position.x == i && this->position.y == j) {
 					this->selector.setOutlineColor(Palette::White);
-					this->selector.setPosition(500.0f + (i - 2) * 128.0f, 500.0f + (j - 2) * 128.0f);
+					this->selector.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (j - ((this->size.y - 1) / 2.0f)) * 128.0f);
 					this->window.draw(this->selector);
 				}
 				if (this->selected.has_value() && this->selected.value().x == i && this->selected.value().y == j) {
 					this->selector.setOutlineColor(Palette::Red);
-					this->selector.setPosition(500.0f + (i - 2) * 128.0f, 500.0f + (j - 2) * 128.0f);
+					this->selector.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (j - ((this->size.y - 1) / 2.0f)) * 128.0f);
 					this->window.draw(this->selector);
 				}
 				if (this->board.at(i).at(j).get_species().has_value()) {
@@ -95,7 +129,7 @@ namespace ld40 {
 					this->sprite.setScale(1.0f, 1.0f);
 					this->sprite.setOrigin(64.0f, 64.0f);
 					this->sprite.setRotation(0.0f);
-					this->sprite.setPosition(500.0f + (i - 2) * 128.0f, 500.0f + (j - 2) * 128.0f);
+					this->sprite.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (j - ((this->size.y - 1) / 2.0f)) * 128.0f);
 					this->window.draw(this->sprite);
 				}
 			}
@@ -112,7 +146,7 @@ namespace ld40 {
 			this->sprite.setScale(1.0f, 1.0f);
 			this->sprite.setOrigin(64.0f, 64.0f);
 			this->sprite.setRotation(0.0f);
-			this->sprite.setPosition(500.0f + (i - 2) * 128.0f, 500.0f + -3 * 128.0f);
+			this->sprite.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f - (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
 			this->window.draw(this->sprite);
 		}
 		for (std::int8_t i = 0; i < this->size.x; ++i) {
@@ -127,7 +161,7 @@ namespace ld40 {
 			this->sprite.setScale(1.0f, 1.0f);
 			this->sprite.setOrigin(64.0f, 64.0f);
 			this->sprite.setRotation(180.0f);
-			this->sprite.setPosition(500.0f + (i - 2) * 128.0f, 500.0f + 3 * 128.0f);
+			this->sprite.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
 			this->window.draw(this->sprite);
 		}
 		for (std::int8_t i = 0; i < this->size.y; ++i) {
@@ -142,7 +176,7 @@ namespace ld40 {
 			this->sprite.setScale(1.0f, 1.0f);
 			this->sprite.setOrigin(64.0f, 64.0f);
 			this->sprite.setRotation(180.0f);
-			this->sprite.setPosition(500.0f + -3 * 128.0f, 500.0f + (i - 2) * 128.0f);
+			this->sprite.setPosition(500.0f - (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (i - ((this->size.y - 1) / 2.0f)) * 128.0f);
 			this->window.draw(this->sprite);
 		}
 		for (std::int8_t i = 0; i < this->size.y; ++i) {
@@ -157,7 +191,7 @@ namespace ld40 {
 			this->sprite.setScale(1.0f, 1.0f);
 			this->sprite.setOrigin(64.0f, 64.0f);
 			this->sprite.setRotation(0.0f);
-			this->sprite.setPosition(500.0f + 3 * 128.0f, 500.0f + (i - 2) * 128.0f);
+			this->sprite.setPosition(500.0f + (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (i - ((this->size.y - 1) / 2.0f)) * 128.0f);
 			this->window.draw(this->sprite);
 		}
 		auto texture = this->tm.get_texture(u8"corner_NE");
@@ -166,16 +200,16 @@ namespace ld40 {
 		this->sprite.setScale(1.0f, 1.0f);
 		this->sprite.setOrigin(64.0f, 64.0f);
 		this->sprite.setRotation(0.0f);
-		this->sprite.setPosition(500.0f + 3 * 128.0f, 500.0f - 3 * 128.0f);
+		this->sprite.setPosition(500.0f + (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f - (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
 		this->window.draw(this->sprite);
 		this->sprite.setRotation(90.0f);
-		this->sprite.setPosition(500.0f + 3 * 128.0f, 500.0f + 3 * 128.0f);
+		this->sprite.setPosition(500.0f + (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
 		this->window.draw(this->sprite);
 		this->sprite.setRotation(180.0f);
-		this->sprite.setPosition(500.0f - 3 * 128.0f, 500.0f + 3 * 128.0f);
+		this->sprite.setPosition(500.0f - (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
 		this->window.draw(this->sprite);
 		this->sprite.setRotation(270.0f);
-		this->sprite.setPosition(500.0f - 3 * 128.0f, 500.0f - 3 * 128.0f);
+		this->sprite.setPosition(500.0f - (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f - (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
 		this->window.draw(this->sprite);
 		if (this->incoming.has_value()) {
 			auto texture = this->tm.get_texture(this->incoming.value().get_name() + u8"_icon");
@@ -185,16 +219,16 @@ namespace ld40 {
 			this->sprite.setRotation(0.0f);
 			this->sprite.setScale(2.0f, 2.0f);
 			if (!this->gates.at(this->to_gate).x) {
-				this->sprite.setPosition(500.0f + -3 * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - 2) * 128.0f);
+				this->sprite.setPosition(500.0f - (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - ((this->size.y - 1) / 2.0f)) * 128.0f);
 			}
 			else if (!this->gates.at(this->to_gate).y) {
-				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - 2) * 128.0f, 500.0f + -3 * 128.0f);
+				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f - (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
 			}
 			else if (this->gates.at(this->to_gate).x == static_cast<std::size_t>(this->size.x - 1)) {
-				this->sprite.setPosition(500.0f + 3 * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - 2) * 128.0f);
+				this->sprite.setPosition(500.0f + (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - ((this->size.y - 1) / 2.0f)) * 128.0f);
 			}
 			else {
-				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - 2) * 128.0f, 500.0f + 3 * 128.0f);
+				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
 			}
 			this->window.draw(this->sprite);
 		}
