@@ -21,6 +21,7 @@ namespace ld40 {
 		private:
 			sf::Vector2<std::uint8_t> size;
 			sf::RectangleShape zone;
+			sf::RectangleShape selector;
 			sf::Vector2<std::int8_t> position;
 			std::uint64_t turn;
 			bool over;
