@@ -14,8 +14,8 @@ namespace ld40 {
 			void run();
 		private:
 			sf::RenderWindow window;
-			std::unique_ptr<State> state;
 			TextureManager tm;
+			std::unique_ptr<State> state;
 	};
 }
 

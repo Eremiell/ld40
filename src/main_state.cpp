@@ -4,13 +4,19 @@
 #include "inc/palette.hpp"
 
 namespace ld40 {
-	MainState::MainState(sf::RenderWindow &window) : State(window), size(5u, 5u), zone(sf::Vector2<float>(100.0f, 100.0f)), position(2u, 2u) {
+	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), position(2u, 2u) {
+		this->tm.load_sheet(u8"sprite_sheet.json");
 		this->board.resize(5);
 		for (std::size_t i = 0; i < 5; ++i) {
 			this->board.at(i).resize(5);
 		}
-		this->zone.setOrigin(50.0f, 50.0f);
+		this->zone.setOrigin(64.0f, 64.0f);
 		this->zone.setOutlineThickness(5.0f);
+		auto texture = this->tm.get_texture(this->catalogue.get_species()->get_name());
+		this->sprite.setTexture(*texture.first);
+		this->sprite.setTextureRect(texture.second);
+		this->sprite.setOrigin(64.0f, 64.0f);
+		this->sprite.setPosition(500.0f, 500.0f);
 	}
 
 	void MainState::integrate(std::uint8_t controls) {
@@ -41,7 +47,7 @@ namespace ld40 {
 	void MainState::render() {
 		for (std::int8_t i = 0; i < 5; ++i) {
 			for (std::int8_t j = 0; j < 5; ++j) {
-				this->zone.setPosition(500.0f + (i - 2) * 110.0f, 500.0f + (j - 2) * 110.0f);
+				this->zone.setPosition(500.0f + (i - 2) * 138.0f, 500.0f + (j - 2) * 138.0f);
 				this->zone.setFillColor(this->board.at(i).at(j).get_colour());
 				this->zone.setOutlineColor(sf::Color::Transparent);
 				if (this->position.x == i && this->position.y == j) {
@@ -53,6 +59,7 @@ namespace ld40 {
 				this->window.draw(this->zone);
 			}
 		}
+		this->window.draw(this->sprite);
 		return;
 	}
 }

@@ -6,9 +6,7 @@
 #include "inc/controls.hpp"
 
 namespace ld40 {
-	Game::Game() : window(sf::VideoMode(1000.0f, 1000.0f), "LD40", sf::Style::Titlebar | sf::Style::Close), state(new MainState(this->window)) {
-		tm.load_sheet("sprite_sheet.json");
-	}
+	Game::Game() : window(sf::VideoMode(1000.0f, 1000.0f), "LD40", sf::Style::Titlebar | sf::Style::Close), tm(), state(new MainState(this->window, this->tm)) {}
 
 	void Game::run() {
 		bool running{true};
