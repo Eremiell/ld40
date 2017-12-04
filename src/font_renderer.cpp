@@ -12,9 +12,11 @@ namespace ld40 {
 		static const float letter_width{16.0f};
 		this->window.setView(this->window.getDefaultView());
 		for (auto &chr : text) {
-			this->letter.setTextureRect(this->tm.get_texture(std::string{chr}).second);
-			this->letter.setPosition(position);
-			this->window.draw(this->letter);
+			if (chr != ' ') {
+				this->letter.setTextureRect(this->tm.get_texture(std::string{chr}).second);
+				this->letter.setPosition(position);
+				this->window.draw(this->letter);
+			}
 			position.x += letter_width;
 		}
 		return;

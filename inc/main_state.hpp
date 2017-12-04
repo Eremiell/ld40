@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstdint>
 #include <optional>
+#include <array>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -38,6 +39,7 @@ namespace ld40 {
 			sf::Sound sound;
 			void generate_gates();
 			void draw_hud();
+			const std::array<std::string, 7> habitats{u8"plains", u8"desert", u8"water", u8"arctic", u8"taiga", u8"mountains", u8"tropical"};
 	};
 }
 

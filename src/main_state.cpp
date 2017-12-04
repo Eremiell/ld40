@@ -14,8 +14,13 @@ namespace ld40 {
 		this->tm.load_sheet(u8"animal_icons.json");
 		this->tm.load_sheet(u8"game_tiles.json");
 		this->board.resize(this->size.x);
+		std::mt19937_64 mt(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+		std::uniform_int_distribution<std::size_t> dist(0, this->habitats.size() - 1);
 		for (std::size_t i = 0; i < this->size.x; ++i) {
 			this->board.at(i).resize(this->size.y);
+			for (std::size_t j = 0; j < this->size.y; ++j) {
+				this->board.at(i).at(j).set_habitat(this->habitats.at(dist(mt)));
+			}
 		}
 		this->zone.setOrigin(64.0f, 64.0f);
 		this->selector.setFillColor(sf::Color::Transparent);
@@ -84,10 +89,13 @@ namespace ld40 {
 			}
 			if (this->turn && this->resize && !(this->turn % 20)) {
 				std::uint8_t direction = this->turn % 80 / 20;
+				std::mt19937_64 mt(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+				std::uniform_int_distribution<std::size_t> dist(0, this->habitats.size() - 1);
 				switch (direction) {
 					case 0:
 						for (auto &row : this->board) {
-							row.emplace(row.begin());
+							auto cell = row.emplace(row.begin());
+							cell->set_habitat(this->habitats.at(dist(mt)));
 						}
 						++this->size.y;
 						break;
@@ -95,11 +103,15 @@ namespace ld40 {
 						{
 							auto &row = this->board.emplace_back();
 							row.resize(++this->size.x);
+							for (auto &cell : row) {
+								cell.set_habitat(this->habitats.at(dist(mt)));
+							}
 						}
 						break;
 					case 2:
 						for (auto &row : this->board) {
-							row.emplace_back();
+							auto &cell = row.emplace_back();
+							cell.set_habitat(this->habitats.at(dist(mt)));
 						}
 						++this->size.y;
 						break;
@@ -107,6 +119,9 @@ namespace ld40 {
 						{
 							auto row = this->board.emplace(this->board.begin());
 							row->resize(++this->size.x);
+							for (auto &cell : *row) {
+								cell.set_habitat(this->habitats.at(dist(mt)));
+							}
 						}
 						break;
 				}
@@ -128,10 +143,18 @@ namespace ld40 {
 			for (std::int8_t j = 0; j < this->size.y; ++j) {
 				this->zone.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (j - ((this->size.y - 1) / 2.0f)) * 128.0f);
 				this->zone.setFillColor(this->board.at(i).at(j).get_colour());
-				//this->zone.setOutlineColor(sf::Color::Transparent);
 				this->window.draw(this->zone);
+				auto texture = this->tm.get_texture(this->board.at(i).at(j).get_habitat());
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
+				this->sprite.setScale(1.0f, 1.0f);
+				this->sprite.setOrigin(64.0f, 64.0f);
+				this->sprite.setRotation(0.0f);
+				this->sprite.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (j - ((this->size.y - 1) / 2.0f)) * 128.0f);
+				this->window.draw(this->sprite);
+				//this->zone.setOutlineColor(sf::Color::Transparent);
 				if (this->position.x == i && this->position.y == j) {
-					this->selector.setOutlineColor(Palette::White);
+					this->selector.setOutlineColor(Palette::NightBlue);
 					this->selector.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (j - ((this->size.y - 1) / 2.0f)) * 128.0f);
 					this->window.draw(this->selector);
 				}
@@ -141,7 +164,7 @@ namespace ld40 {
 					this->window.draw(this->selector);
 				}
 				if (this->board.at(i).at(j).get_species().has_value()) {
-					auto texture = this->tm.get_texture(this->board.at(i).at(j).get_species().value().get_name());
+					texture = this->tm.get_texture(this->board.at(i).at(j).get_species().value().get_name());
 					this->sprite.setTexture(*texture.first);
 					this->sprite.setTextureRect(texture.second);
 					this->sprite.setScale(1.0f, 1.0f);
@@ -360,6 +383,12 @@ namespace ld40 {
 			this->sprite.setTexture(*texture.first);
 			this->sprite.setTextureRect(texture.second);
 			this->sprite.setPosition(1000.0f - 60.0f - 32.0f, 20.0f);
+			this->window.draw(this->sprite);
+			texture = this->tm.get_texture(u8"+");
+			this->sprite.setTexture(*texture.first);
+			this->sprite.setTextureRect(texture.second);
+			this->sprite.setOrigin(16.0f, 0.0f);
+			this->sprite.setPosition(1000.0f - 60.0f - 64.0f, 20.0f);
 			this->window.draw(this->sprite);
 		}
 		if (this->over) {
