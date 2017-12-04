@@ -13,10 +13,12 @@ namespace ld40 {
 		public:
 			FontRenderer(sf::RenderWindow &window, TextureManager &tm);
 			void render(std::string text, sf::Vector2<float> position);
+			void render_box(std::string text, sf::Vector2<float> position);
 		private:
 			sf::RenderWindow &window;
 			TextureManager &tm;
 			sf::Sprite letter;
+			sf::Sprite icon;
 	};
 }
 

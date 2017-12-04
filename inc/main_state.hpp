@@ -19,6 +19,7 @@ namespace ld40 {
 			MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm, FontRenderer &fr);
 			virtual void integrate(std::uint8_t controls) override;
 			virtual void render() override;
+			bool is_over() const;
 		private:
 			sf::Vector2<std::uint8_t> size;
 			sf::RectangleShape zone;

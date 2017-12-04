@@ -28,7 +28,7 @@ namespace ld40 {
 	}
 
 	void MainState::integrate(std::uint8_t controls) {
-		if (!over) {
+		if (!this->over) {
 			if (controls & static_cast<std::uint8_t>(Controls::Up) && this->position.y) {
 				--this->position.y;
 			}
@@ -258,6 +258,10 @@ namespace ld40 {
 		return;
 	}
 
+	bool MainState::is_over() const {
+		return this->over;
+	}
+
 	void MainState::generate_gates() {
 		this->gates.clear();
 		for (std::uint8_t i = 1; i < this->size.x - 1; ++i) {
@@ -286,7 +290,7 @@ namespace ld40 {
 	void MainState::draw_hud() {
 		this->fr.render("turn: " + std::to_string(this->turn), sf::Vector2<float>(20.0f, 20.0f));
 		if (this->over) {
-			this->fr.render("game over!", sf::Vector2<float>(500.0f - 5 * 16.0f, 400.0f));
+			this->fr.render_box("game over!", sf::Vector2<float>(500.0f - 5 * 16.0f, 400.0f));
 		}
 		return;
 	}
