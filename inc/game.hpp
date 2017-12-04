@@ -6,6 +6,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "inc/main_state.hpp"
 #include "inc/texture_manager.hpp"
+#include "inc/sound_manager.hpp"
 
 namespace ld40 {
 	class Game {
@@ -15,6 +16,7 @@ namespace ld40 {
 		private:
 			sf::RenderWindow window;
 			TextureManager tm;
+			SoundManager sm;
 			std::unique_ptr<State> state;
 	};
 }

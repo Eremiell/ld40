@@ -9,7 +9,7 @@
 #include <iostream>
 
 namespace ld40 {
-	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(false) {
+	MainState::MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm) : State(window, tm, sm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(false) {
 		this->tm.load_sheet(u8"sprite_sheet.json");
 		this->tm.load_sheet(u8"animal_icons.json");
 		this->tm.load_sheet(u8"game_tiles.json");
@@ -23,6 +23,7 @@ namespace ld40 {
 		this->selector.setOutlineThickness(5.0f);
 		this->board.at((this->size.x - 1) / 2).at((this->size.y - 1) / 2).set_species(*this->catalogue.get_species());
 		this->generate_gates();
+		this->sm.load_soundlist(u8"soundlist.json");
 	}
 
 	void MainState::integrate(std::uint8_t controls) {
@@ -42,15 +43,21 @@ namespace ld40 {
 			if (controls & static_cast<std::uint8_t>(Controls::Select)) {
 				if (this->selected.has_value() && this->position == this->selected.value()) {
 					this->selected = {};
+					this->sound.setBuffer(*this->sm.get_sound(this->board.at(this->position.x).at(this->position.y).get_species().value().get_name()));
+					this->sound.play();
 				}
 				else if (this->selected.has_value() && std::abs(this->position.x - this->selected.value().x) + std::abs(this->position.y - this->selected.value().y) == 1 && !this->board.at(this->position.x).at(this->position.y).get_species().has_value()) {
 					this->board.at(this->position.x).at(this->position.y).set_species(this->board.at(this->selected.value().x).at(this->selected.value().y).get_species());
 					this->board.at(this->selected.value().x).at(this->selected.value().y).set_species();
 					this->selected = {};
+					this->sound.setBuffer(*this->sm.get_sound(this->board.at(this->position.x).at(this->position.y).get_species().value().get_name()));
+					this->sound.play();
 					++this->turn;
 				}
 				else if (this->board.at(this->position.x).at(this->position.y).get_species().has_value()) {
 					this->selected = this->position;
+					this->sound.setBuffer(*this->sm.get_sound(this->board.at(this->position.x).at(this->position.y).get_species().value().get_name()));
+					this->sound.play();
 					//this->board.at(this->position.x).at(this->position.y).set_colour(Palette::Orange);
 				}
 			}
@@ -59,8 +66,12 @@ namespace ld40 {
 				std::mt19937_64 mt(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 				std::uniform_int_distribution<std::size_t> dist(0, this->gates.size() - 1);
 				this->to_gate = dist(mt);
+				this->sound.setBuffer(*this->sm.get_sound(this->incoming.value().get_name()));
+				this->sound.play();
 			}
 			if (!(this->turn % 5) && this->incoming.has_value()) {
+				this->sound.setBuffer(*this->sm.get_sound(this->incoming.value().get_name()));
+				this->sound.play();
 				if (this->board.at(this->gates.at(this->to_gate).x).at(this->gates.at(this->to_gate).y).get_species().has_value()) {
 					over = true;
 				}

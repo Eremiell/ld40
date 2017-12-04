@@ -9,13 +9,14 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Audio/Sound.hpp>
 #include "inc/tile.hpp"
 #include "inc/species_catalogue.hpp"
 
 namespace ld40 {
 	class MainState : public State {
 		public:
-			MainState(sf::RenderWindow &window, TextureManager &tm);
+			MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm);
 			virtual void integrate(std::uint8_t controls) override;
 			virtual void render() override;
 		private:
@@ -33,6 +34,7 @@ namespace ld40 {
 			std::vector<sf::Vector2<std::size_t>> gates;
 			sf::Sprite sprite;
 			SpeciesCatalogue catalogue;
+			sf::Sound sound;
 			void generate_gates();
 	};
 }
