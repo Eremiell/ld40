@@ -2,13 +2,23 @@
 #include <random>
 #include <chrono>
 #include <fstream>
+#ifndef _WIN32
 #include <experimental/filesystem>
+#else
+#include <sstream>
+#endif
 #include <nlohmann/json.hpp>
 
 namespace ld40 {
 	SpeciesCatalogue::SpeciesCatalogue() {
+#ifndef _WIN32
 		std::experimental::filesystem::path path;
 		path.append(u8"res").append(u8"species.json");
+#else
+		std::stringstream ss;
+		ss << u8"res" << '//' << u8"species.json";
+		std::string path = ss.str();
+#endif
 		std::ifstream file(path);
 		nlohmann::json json;
 		file >> json;
