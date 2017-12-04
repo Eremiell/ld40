@@ -9,7 +9,7 @@
 #include <iostream>
 
 namespace ld40 {
-	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(true) {
+	MainState::MainState(sf::RenderWindow &window, TextureManager &tm) : State(window, tm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(false) {
 		this->tm.load_sheet(u8"sprite_sheet.json");
 		this->tm.load_sheet(u8"animal_icons.json");
 		this->tm.load_sheet(u8"game_tiles.json");
@@ -106,6 +106,12 @@ namespace ld40 {
 	}
 
 	void MainState::render() {
+		auto view = this->window.getDefaultView();
+		view.setCenter(500.0f, 500.f);
+		std::size_t view_size = std::max(this->size.x, this->size.y) + 1;
+		float ratio = 900.0f / view_size / 128.0f;
+		view.zoom(1.0f / ratio);
+		this->window.setView(view);
 		for (std::int8_t i = 0; i < this->size.x; ++i) {
 			for (std::int8_t j = 0; j < this->size.y; ++j) {
 				this->zone.setPosition(500.0f + (i - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (j - ((this->size.y - 1) / 2.0f)) * 128.0f);
@@ -139,6 +145,7 @@ namespace ld40 {
 			for (auto &gate : this->gates) {
 				if (static_cast<int>(gate.x) == i && !gate.y) {
 					texture = this->tm.get_texture(u8"gate_EW");
+					break;
 				}
 			}
 			this->sprite.setTexture(*texture.first);
@@ -154,6 +161,7 @@ namespace ld40 {
 			for (auto &gate : this->gates) {
 				if (static_cast<int>(gate.x) == i && gate.y == this->size.y - 1u) {
 					texture = this->tm.get_texture(u8"gate_EW");
+					break;
 				}
 			}
 			this->sprite.setTexture(*texture.first);
@@ -169,6 +177,7 @@ namespace ld40 {
 			for (auto &gate : this->gates) {
 				if (static_cast<int>(gate.y) == i && !gate.x) {
 					texture = this->tm.get_texture(u8"gate_NS");
+					break;
 				}
 			}
 			this->sprite.setTexture(*texture.first);
@@ -184,6 +193,7 @@ namespace ld40 {
 			for (auto &gate : this->gates) {
 				if (static_cast<int>(gate.y) == i && gate.x == this->size.x - 1u) {
 					texture = this->tm.get_texture(u8"gate_NS");
+					break;
 				}
 			}
 			this->sprite.setTexture(*texture.first);
