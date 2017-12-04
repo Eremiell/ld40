@@ -12,7 +12,7 @@ namespace ld40 {
 		sheet_texture.first->second->loadFromFile(this->get_full_path(json.at(u8"filename").get<std::string>()));
 		int size = json.at(u8"size");
 		for (auto &texture : json.at(u8"textures")) {
-			this->textures.emplace(texture.at(u8"species"), std::make_pair<const sf::Texture*, sf::Rect<int>>(sheet_texture.first->second.get(), sf::Rect<int>(texture.at(u8"x"), texture.at(u8"y"), size, size)));
+			this->textures.emplace(texture.at(u8"texture"), std::make_pair<const sf::Texture*, sf::Rect<int>>(sheet_texture.first->second.get(), sf::Rect<int>(texture.at(u8"x"), texture.at(u8"y"), size, size)));
 		}
 		return;
 	}
