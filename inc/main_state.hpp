@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <optional>
 #include <array>
+#include <random>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -29,6 +30,7 @@ namespace ld40 {
 			std::uint64_t turn;
 			bool over;
 			bool resize;
+			std::mt19937_64 mt;
 			std::optional<sf::Vector2<std::int8_t>> selected;
 			std::optional<Species> incoming;
 			std::size_t to_gate;

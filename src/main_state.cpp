@@ -1,7 +1,6 @@
 #include "inc/main_state.hpp"
 #include <cstdint>
 #include <cmath>
-#include <random>
 #include <chrono>
 #include "inc/controls.hpp"
 #include "inc/palette.hpp"
@@ -9,17 +8,16 @@
 #include <iostream>
 
 namespace ld40 {
-	MainState::MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm, FontRenderer &fr) : State(window, tm, sm, fr), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(false) {
+	MainState::MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm, FontRenderer &fr) : State(window, tm, sm, fr), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(false), mt(std::chrono::high_resolution_clock::now().time_since_epoch().count()) {
 		this->tm.load_sheet(u8"sprite_sheet.json");
 		this->tm.load_sheet(u8"animal_icons.json");
 		this->tm.load_sheet(u8"game_tiles.json");
 		this->board.resize(this->size.x);
-		std::mt19937_64 mt(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		std::uniform_int_distribution<std::size_t> dist(0, this->habitats.size() - 1);
 		for (std::size_t i = 0; i < this->size.x; ++i) {
 			this->board.at(i).resize(this->size.y);
 			for (std::size_t j = 0; j < this->size.y; ++j) {
-				this->board.at(i).at(j).set_habitat(this->habitats.at(dist(mt)));
+				this->board.at(i).at(j).set_habitat(this->habitats.at(dist(this->mt)));
 			}
 		}
 		this->zone.setOrigin(64.0f, 64.0f);
@@ -69,9 +67,8 @@ namespace ld40 {
 			}
 			if (this->turn % 5 == 2 && !this->incoming.has_value()) {
 				this->incoming = *this->catalogue.get_species();
-				std::mt19937_64 mt(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 				std::uniform_int_distribution<std::size_t> dist(0, this->gates.size() - 1);
-				this->to_gate = dist(mt);
+				this->to_gate = dist(this->mt);
 				this->sound.setBuffer(*this->sm.get_sound(this->incoming.value().get_name()));
 				this->sound.play();
 			}
@@ -89,13 +86,12 @@ namespace ld40 {
 			}
 			if (this->turn && this->resize && !(this->turn % 20)) {
 				std::uint8_t direction = this->turn % 80 / 20;
-				std::mt19937_64 mt(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 				std::uniform_int_distribution<std::size_t> dist(0, this->habitats.size() - 1);
 				switch (direction) {
 					case 0:
 						for (auto &row : this->board) {
 							auto cell = row.emplace(row.begin());
-							cell->set_habitat(this->habitats.at(dist(mt)));
+							cell->set_habitat(this->habitats.at(dist(this->mt)));
 						}
 						++this->size.y;
 						break;
@@ -104,14 +100,14 @@ namespace ld40 {
 							auto &row = this->board.emplace_back();
 							row.resize(++this->size.x);
 							for (auto &cell : row) {
-								cell.set_habitat(this->habitats.at(dist(mt)));
+								cell.set_habitat(this->habitats.at(dist(this->mt)));
 							}
 						}
 						break;
 					case 2:
 						for (auto &row : this->board) {
 							auto &cell = row.emplace_back();
-							cell.set_habitat(this->habitats.at(dist(mt)));
+							cell.set_habitat(this->habitats.at(dist(this->mt)));
 						}
 						++this->size.y;
 						break;
@@ -120,7 +116,7 @@ namespace ld40 {
 							auto row = this->board.emplace(this->board.begin());
 							row->resize(++this->size.x);
 							for (auto &cell : *row) {
-								cell.set_habitat(this->habitats.at(dist(mt)));
+								cell.set_habitat(this->habitats.at(dist(this->mt)));
 							}
 						}
 						break;
