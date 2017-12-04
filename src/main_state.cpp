@@ -109,8 +109,8 @@ namespace ld40 {
 		auto view = this->window.getDefaultView();
 		view.setCenter(500.0f, 500.f);
 		std::size_t view_size = std::max(this->size.x, this->size.y) + 1;
-		float ratio = 900.0f / view_size / 128.0f;
-		view.zoom(1.0f / ratio);
+		float ratio = 128.0f / (900.0f / view_size);
+		view.zoom(ratio);
 		this->window.setView(view);
 		for (std::int8_t i = 0; i < this->size.x; ++i) {
 			for (std::int8_t j = 0; j < this->size.y; ++j) {

@@ -10,7 +10,7 @@ ldirs :=
 bindefines := -UDEBUG
 dbgdefines := -DDEBUG
 buildopts := 
-linkflags := -lsfml-graphics -lsfml-window -lsfml-system -lstdc++fs
+linkflags := -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system -lstdc++fs
 
 gcc:
 	mkdir -p bin
