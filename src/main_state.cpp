@@ -285,6 +285,9 @@ namespace ld40 {
 
 	void MainState::draw_hud() {
 		this->fr.render("turn: " + std::to_string(this->turn), sf::Vector2<float>(20.0f, 20.0f));
+		if (this->over) {
+			this->fr.render("game over!", sf::Vector2<float>(500.0f - 5 * 16.0f, 400.0f));
+		}
 		return;
 	}
 }
