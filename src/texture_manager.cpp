@@ -1,5 +1,8 @@
 #include "inc/texture_manager.hpp"
 #include <fstream>
+#ifdef _WIN32
+#include <sstream>
+#endif
 #include <nlohmann/json.hpp>
 
 namespace ld40 {
@@ -23,10 +26,17 @@ namespace ld40 {
 		}
 		return std::make_pair<const sf::Texture*, sf::Rect<int>>(nullptr, sf::Rect<int>());
 	}
-
+#ifndef _WIN32
 	std::experimental::filesystem::path TextureManager::get_full_path(std::string_view filename) {
 		std::experimental::filesystem::path path;
 		path.append(u8"res").append(u8"img").append(filename);
 		return path;
 	}
+#else
+	std::string TextureManager::get_full_path(std::string_view filename) {
+		std::stringstream path;
+		path << u8"res" << '\\' << u8"img" << '\\' << filename;
+		return path.str();
+	}
+#endif
 }

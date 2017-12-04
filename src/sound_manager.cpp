@@ -1,5 +1,8 @@
 #include "inc/sound_manager.hpp"
 #include <fstream>
+#ifdef _WIN32
+#include <sstream>
+#endif
 #include <nlohmann/json.hpp>
 
 namespace ld40 {
@@ -27,10 +30,17 @@ namespace ld40 {
 		}
 		return nullptr;
 	}
-
+#ifndef _WIN32
 	std::experimental::filesystem::path SoundManager::get_full_path(std::string_view filename) {
 		std::experimental::filesystem::path path;
 		path.append(u8"res").append(u8"sfx").append(filename);
 		return path;
 	}
+#else
+	std::string SoundManager::get_full_path(std::string_view filename) {
+		std::stringstream path;
+		path << u8"res" << '\\' << u8"sfx" << '\\' << filename;
+		return path.str();
+	}
+#endif
 }
