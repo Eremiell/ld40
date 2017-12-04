@@ -9,7 +9,7 @@
 #include <iostream>
 
 namespace ld40 {
-	MainState::MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm) : State(window, tm, sm), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(false) {
+	MainState::MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm, FontRenderer &fr) : State(window, tm, sm, fr), size(5u, 5u), zone(sf::Vector2<float>(128.0f, 128.0f)), selector(sf::Vector2<float>(118.0f, 118.0f)), position(2u, 2u), turn(0ull), over(false), resize(false) {
 		this->tm.load_sheet(u8"sprite_sheet.json");
 		this->tm.load_sheet(u8"animal_icons.json");
 		this->tm.load_sheet(u8"game_tiles.json");
@@ -24,6 +24,7 @@ namespace ld40 {
 		this->board.at((this->size.x - 1) / 2).at((this->size.y - 1) / 2).set_species(*this->catalogue.get_species());
 		this->generate_gates();
 		this->sm.load_soundlist(u8"soundlist.json");
+		this->sound.setVolume(15.0f);
 	}
 
 	void MainState::integrate(std::uint8_t controls) {
@@ -253,6 +254,7 @@ namespace ld40 {
 			}
 			this->window.draw(this->sprite);
 		}
+		this->draw_hud();
 		return;
 	}
 
@@ -278,6 +280,11 @@ namespace ld40 {
 				this->gates.emplace_back(0, i);
 			}
 		}
+		return;
+	}
+
+	void MainState::draw_hud() {
+		this->fr.render("turn: " + std::to_string(this->turn), sf::Vector2<float>(20.0f, 20.0f));
 		return;
 	}
 }

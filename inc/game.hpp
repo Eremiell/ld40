@@ -7,6 +7,7 @@
 #include "inc/main_state.hpp"
 #include "inc/texture_manager.hpp"
 #include "inc/sound_manager.hpp"
+#include "inc/font_renderer.hpp"
 
 namespace ld40 {
 	class Game {
@@ -17,6 +18,7 @@ namespace ld40 {
 			sf::RenderWindow window;
 			TextureManager tm;
 			SoundManager sm;
+			FontRenderer fr;
 			std::unique_ptr<State> state;
 	};
 }

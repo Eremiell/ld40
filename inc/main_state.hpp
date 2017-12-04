@@ -16,7 +16,7 @@
 namespace ld40 {
 	class MainState : public State {
 		public:
-			MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm);
+			MainState(sf::RenderWindow &window, TextureManager &tm, SoundManager &sm, FontRenderer &fr);
 			virtual void integrate(std::uint8_t controls) override;
 			virtual void render() override;
 		private:
@@ -36,6 +36,7 @@ namespace ld40 {
 			SpeciesCatalogue catalogue;
 			sf::Sound sound;
 			void generate_gates();
+			void draw_hud();
 	};
 }
 
