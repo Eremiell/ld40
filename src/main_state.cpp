@@ -235,24 +235,67 @@ namespace ld40 {
 		this->window.draw(this->sprite);
 		if (this->incoming.has_value()) {
 			auto texture = this->tm.get_texture(this->incoming.value().get_name() + u8"_icon");
+			this->sprite.setRotation(0.0f);
 			this->sprite.setTexture(*texture.first);
 			this->sprite.setTextureRect(texture.second);
 			this->sprite.setOrigin(8.0f, 8.0f);
-			this->sprite.setRotation(0.0f);
 			this->sprite.setScale(2.0f, 2.0f);
 			if (!this->gates.at(this->to_gate).x) {
+				this->sprite.setPosition(500.0f - (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - ((this->size.y - 1) / 2.0f)) * 128.0f - 32.0f);
+				this->window.draw(this->sprite);
+				texture = this->tm.get_texture(u8"arrow_right");
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
 				this->sprite.setPosition(500.0f - (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - ((this->size.y - 1) / 2.0f)) * 128.0f);
+				this->window.draw(this->sprite);
+				texture = this->tm.get_texture(std::to_string(5 - this->turn % 5));
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
+				this->sprite.setPosition(500.0f - (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - ((this->size.y - 1) / 2.0f)) * 128.0f + 32.0f);
+				this->window.draw(this->sprite);
 			}
 			else if (!this->gates.at(this->to_gate).y) {
+				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - ((this->size.x - 1) / 2.0f)) * 128.0f - 32.0f, 500.0f - (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
+				this->window.draw(this->sprite);
+				texture = this->tm.get_texture(u8"arrow_down");
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
 				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f - (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
+				this->window.draw(this->sprite);
+				texture = this->tm.get_texture(std::to_string(5 - this->turn % 5));
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
+				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - ((this->size.x - 1) / 2.0f)) * 128.0f + 32.0f, 500.0f - (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
+				this->window.draw(this->sprite);
 			}
 			else if (this->gates.at(this->to_gate).x == static_cast<std::size_t>(this->size.x - 1)) {
+				this->sprite.setPosition(500.0f + (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - ((this->size.y - 1) / 2.0f)) * 128.0f - 32.0f);
+				this->window.draw(this->sprite);
+				texture = this->tm.get_texture(u8"arrow_left");
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
 				this->sprite.setPosition(500.0f + (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - ((this->size.y - 1) / 2.0f)) * 128.0f);
+				this->window.draw(this->sprite);
+				texture = this->tm.get_texture(std::to_string(5 - this->turn % 5));
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
+				this->sprite.setPosition(500.0f + (((this->size.x - 1) / 2.0f) + 1) * 128.0f, 500.0f + (this->gates.at(this->to_gate).y - ((this->size.y - 1) / 2.0f)) * 128.0f + 32.0f);
+				this->window.draw(this->sprite);
 			}
 			else {
+				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - ((this->size.x - 1) / 2.0f)) * 128.0f - 32.0f, 500.0f + (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
+				this->window.draw(this->sprite);
+				texture = this->tm.get_texture(u8"arrow_up");
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
 				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - ((this->size.x - 1) / 2.0f)) * 128.0f, 500.0f + (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
+				this->window.draw(this->sprite);
+				texture = this->tm.get_texture(std::to_string(5 - this->turn % 5));
+				this->sprite.setTexture(*texture.first);
+				this->sprite.setTextureRect(texture.second);
+				this->sprite.setPosition(500.0f + (this->gates.at(this->to_gate).x - ((this->size.x - 1) / 2.0f)) * 128.0f + 32.0f, 500.0f + (((this->size.y - 1) / 2.0f) + 1) * 128.0f);
+				this->window.draw(this->sprite);
 			}
-			this->window.draw(this->sprite);
 		}
 		this->draw_hud();
 		return;
@@ -289,6 +332,36 @@ namespace ld40 {
 
 	void MainState::draw_hud() {
 		this->fr.render("turn: " + std::to_string(this->turn), sf::Vector2<float>(20.0f, 20.0f));
+		this->window.setView(this->window.getDefaultView());
+		if (this->turn % 20 >= 15) {
+			std::uint8_t direction = (this->turn + 5) % 80 / 20;
+			this->sprite.setRotation(0.0f);
+			this->sprite.setScale(2.0f, 2.0f);
+			auto texture = this->tm.get_texture(std::to_string(20 - this->turn % 20));
+			this->sprite.setTexture(*texture.first);
+			this->sprite.setTextureRect(texture.second);
+			this->sprite.setOrigin(16.0f, 0.0f);
+			this->sprite.setPosition(1000.0f - 60.0f, 20.0f);
+			this->window.draw(this->sprite);
+			switch (direction) {
+				case 0:
+					texture = this->tm.get_texture(u8"arrow_up");
+					break;
+				case 1:
+					texture = this->tm.get_texture(u8"arrow_right");
+					break;
+				case 2:
+					texture = this->tm.get_texture(u8"arrow_down");
+					break;
+				case 3:
+					texture = this->tm.get_texture(u8"arrow_left");
+					break;
+			}
+			this->sprite.setTexture(*texture.first);
+			this->sprite.setTextureRect(texture.second);
+			this->sprite.setPosition(1000.0f - 60.0f - 32.0f, 20.0f);
+			this->window.draw(this->sprite);
+		}
 		if (this->over) {
 			this->fr.render_box("game over!", sf::Vector2<float>(500.0f - 5 * 16.0f, 400.0f));
 		}
