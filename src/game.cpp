@@ -35,6 +35,9 @@ namespace ld40 {
 						case sf::Keyboard::Right:
 							controls |= static_cast<std::uint8_t>(Controls::Right);
 							break;
+						case sf::Keyboard::Return:
+							controls |= static_cast<std::uint8_t>(Controls::Cancel);
+							break;
 						default:
 							break;
 					}

@@ -1,15 +1,15 @@
 #include "inc/tile.hpp"
 
 namespace ld40 {
-	Tile::Tile(sf::Color colour, std::string habitat, std::optional<Species> species) : colour(colour), species(species), habitat(habitat) {}
+	Tile::Tile(sf::Color colour, std::string habitat, std::optional<Animal> animal) : colour(colour), animal(animal), habitat(habitat) {}
 
 	void Tile::set_colour(sf::Color colour) {
 		this->colour = colour;
 		return;
 	}
 
-	void Tile::set_species(std::optional<Species> species) {
-		this->species = species;
+	void Tile::set_animal(std::optional<Animal> animal) {
+		this->animal = animal;
 		return;
 	}
 
@@ -17,8 +17,8 @@ namespace ld40 {
 		return this->colour;
 	}
 
-	std::optional<Species> Tile::get_species() const {
-		return this->species;
+	std::optional<Animal> Tile::get_animal() const {
+		return this->animal;
 	}
 
 	void Tile::set_habitat(std::string habitat) {

@@ -24,12 +24,12 @@ namespace ld40 {
 		file >> json;
 		file.close();
 		for (auto &species : json) {
-			this->add_species(species.at(u8"species"));
+			this->add_species(species.at(u8"species"), species.at(u8"habitat"));
 		}
 	}
 
-	void SpeciesCatalogue::add_species(std::string species) {
-		this->catalogue.emplace_back(species);
+	void SpeciesCatalogue::add_species(std::string species, std::string habitat) {
+		this->catalogue.emplace_back(species, habitat);
 	}
 
 	const Species* SpeciesCatalogue::get_species(std::string species) const {

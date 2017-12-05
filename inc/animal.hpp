@@ -1,18 +1,19 @@
 #pragma once
-#ifndef SPECIES_HPP
-#define SPECIES_HPP
+#ifndef ANIMAL_HPP
+#define ANIMAL_HPP
 
 #include <string>
+#include "inc/species.hpp"
 
 namespace ld40 {
-	class Species {
+	class Animal {
 		public:
-			Species(std::string name, std::string habitat);
+			Animal(Species species);
 			std::string get_name() const;
 			std::string get_habitat() const;
+			std::size_t energy;
 		private:
-			std::string name;
-			std::string habitat;
+			Species species;
 	};
 }
 
