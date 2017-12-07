@@ -109,7 +109,7 @@ namespace ld40 {
 						++this->remodel_position.x;
 					}
 					if (controls & static_cast<std::uint8_t>(Controls::Select)) {
-						if (this->remodel_position.x + this->remodel_position.y * 6 < this->habitats.size()) {
+						if (this->remodel_position.x + this->remodel_position.y * 6 < static_cast<int>(this->habitats.size())) {
 							this->selected = {};
 							this->board.at(this->position.x).at(this->position.y).set_habitat(this->habitats.at(this->remodel_position.x + this->remodel_position.y * 6));
 							++this->phase;
@@ -502,7 +502,7 @@ namespace ld40 {
 		this->sprite.setPosition(500.0f + letter_width * (length / 2 + 1), 500.0f + letter_width * (length / 2 + 1));
 		this->window.draw(this->sprite);
 		this->sprite.setTexture(*this->tm.get_texture(this->habitats.at(0)).first);
-		for (std::int8_t i = 0; i < this->habitats.size(); ++i) {
+		for (std::int8_t i = 0; i < static_cast<std::int8_t>(this->habitats.size()); ++i) {
 			this->sprite.setTextureRect(this->tm.get_texture(this->habitats.at(i)).second);
 			this->sprite.setOrigin(64.0f, 64.0f);
 			this->sprite.setPosition(500.0f + 128.0f * (i % 6 - 5.0f / 2), 500.0f + 128.0f * (i / 6 - 5.0f / 2));
