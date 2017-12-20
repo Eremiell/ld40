@@ -19,6 +19,7 @@ Made by Eremiell (Code), oboforty (Music & SFX), and Hive Mind (Visuals).
 
 ## Links
 
+* Grab the [resources](https://drive.google.com/open?id=1MTkUZXlPov5NIWl9WGfIDkgVNQalYMW7) (unpack the archive such as the res directory is in the same place as your binary)
 * Follow the development on [Trello](https://trello.com/b/qFf9vUcw/ld40).
 * Watch the development stream on [Picarto](https://picarto.tv/Eremiell).
 * Come chat with us to [Discord](https://discord.gg/NX2jkPw).
